@@ -48,9 +48,12 @@ if( isset( $_POST['scaffold_info'])) {
     #echo '<h1>\$new_layout_css = '.$new_layout_css.'</h1>';
     $_COOKIE = $_POST;
 
+	$tablename_regex = "CREATE\ +TABLE\ +(IF NOT EXISTS)?\ *(`.+`\.)?`([a-zA-Z0-9_]+)`\ \(";
+
     // get first table name
-    if ( preg_match('/CREATE\ +TABLE\ +(IF NOT EXISTS)?\ *`.+`\.`([a-zA-Z0-9_]+)`\ \(/isU', $firstline, $matches) ) {
-        $table['name'] = str_replace($table['table_prefix'],'', $matches[2]);
+    if ( preg_match('/'.$tablename_regex.'/isU', $firstline, $matches) ) {
+        $table['name'] = str_replace($table['table_prefix'],'', $matches[3]);
+		echo $table['name'];
         $max = count($data_lines);
         for ($i = 1; $i < $max; $i++ ) {
             if ( strpos( trim($data_lines[$i]), '`') === 0) { // this line has a column
@@ -68,7 +71,7 @@ if( isset( $_POST['scaffold_info'])) {
         $show_form = 1;
         //print_r($table);
     } else
-        $message .= "Cannot find 'CREATE TABLE IF NOT EXISTS (`.+`\.)?`([a-zA-Z0-9-_]+)` \('";
+        $message .= "Cannot find '".$tablename_regex."'";
 }
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -115,7 +118,7 @@ Enter your phpMyAdmin Table Export SQL  Below to generate your pages. <a href="j
 -- Table structure for table `book`
 -- 
 
-CREATE  TABLE IF NOT EXISTS `book` (
+CREATE  TABLE IF NOT EXISTS `book`.`book` (
   `id` INT NOT NULL AUTO_INCREMENT ,
   `title_index` VARCHAR(127) NOT NULL COMMENT 'SEF title, to appear on URL (i.e. \'osashizu\', \'ofudesaki\', \'mikagura-uta\', \'kyosoden\')' ,
   `title_jpn` VARCHAR(255) NOT NULL ,

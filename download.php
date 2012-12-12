@@ -33,8 +33,10 @@ if (isset($_COOKIE['scaffold_info'])) {
     $new_layout_css = trim($_COOKIE['new_layout_css']);
 
     // get first table name
-    if ( preg_match('/CREATE\ +TABLE\ +(IF NOT EXISTS)?\ *`.+`\.`([a-zA-Z0-9_]+)`\ \(/isU', $firstline, $matches) ) {
+	$tablename_regex = "CREATE\ +TABLE\ +(IF NOT EXISTS)?\ *(`.+`\.)?`([a-zA-Z0-9_]+)`\ \(";
+     if ( preg_match('/'.$tablename_regex.'/isU', $firstline, $matches) ) {
         $table['name'] = str_replace($table['table_prefix'],'', $matches[2]);
+		echo $table['name'];
         $max = count($data_lines);
         for ($i = 1; $i < $max; $i++ ) {
             if ( strpos( trim($data_lines[$i]), '`') === 0) { // this line has a column
@@ -51,9 +53,8 @@ if (isset($_COOKIE['scaffold_info'])) {
         }
         $show_form = 1;
         //print_r($table);
-    } else {
-        $message .= "Cannot find 'CREATE TABLE IF NOT EXISTS (`.+`\.)?`([a-zA-Z0-9_-]+)` \('";
-    }
+    } else
+        $message .= "Cannot find '".$tablename_regex."'";
 }
 
 if ($show_form) {
