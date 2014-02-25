@@ -1,6 +1,15 @@
 <?php
 include("lib/Scaffold.php");
 include("lib/stringParse.php");
+include("scaffolds/codeigniter/ci_controller.php");
+include("scaffolds/codeigniter/ci_css.php");
+include("scaffolds/codeigniter/ci_footer.php");
+include("scaffolds/codeigniter/ci_header.php");
+include("scaffolds/codeigniter/ci_model.php");
+include("scaffolds/codeigniter/ci_view.php");
+include("scaffolds/codeigniter/ci_view_actions.php");
+include("scaffolds/codeigniter/ci_view_browse.php");
+include("scaffolds/codeigniter/ci_view_form.php");
 
 $show_form = 0;
 $message = '';
@@ -40,6 +49,7 @@ if( isset( $_POST['scaffold_info'])) {
     #$table['id_key'] = trim($_POST['id_key']);
     $table['scaffold_info'] = trim($_POST['scaffold_info']);
     $table['website_name'] = trim($_POST['website_name']);
+    $table['project_name'] = trim($_POST['website_name']);
     $table['table_prefix'] = trim($_POST['table_prefix']);
     $table['author'] = trim($_POST['author']);
     $table['company_name'] = trim($_POST['company_name']);
@@ -67,6 +77,21 @@ if( isset( $_POST['scaffold_info'])) {
                     , 'attrib' => $data_lines[$i]
                     );
             }
+        }
+        
+        $table['table_clean'] = cleanText($table['name']);
+        $table['table_clean'] = cleanText($table['name']);
+        $table['className'] = str_replace(' ','_',cleanText($table['name']));
+        $table['tablePlural'] = $table['table_clean'];
+        // to get the table name's plural form
+        $lastchar = substr($table['table_clean'],strlen($table['table_clean'])-1,1);
+        if( $lastchar!='s') {
+            if( $lastchar=='x')
+                $table['tablePlural'] = substr($table['table_clean'],0,strlen($table['table_clean'])-1)."es";
+            elseif( $lastchar=='y')
+                $table['tablePlural'] = substr($table['table_clean'],0,strlen($table['table_clean'])-1)."ies";
+            else
+                $table['tablePlural'] = cleanText($table['name']).'s';
         }
         $show_form = 1;
         //print_r($table);
@@ -213,16 +238,21 @@ function printSection($section='', $text) {
 if ($show_form) {
     $s = new Scaffold($table);
 
-    echo printSection('controller', $s->ci_controller());
-    echo printSection('model', $s->ci_model());
-    echo printSection('browse', $s->ci_view_browse());
-    echo printSection('view', $s->ci_view());
-    echo printSection('form', $s->ci_view_form());
-    echo printSection('actionsnav', $s->ci_view_actions());
+    echo printSection('controller', ci_controller($table));
+    echo printSection('model', ci_model($table));
+    echo printSection('view', ci_view($table));
+    echo printSection('actions', ci_view_actions($table));
+    echo printSection('actionsnav', ci_view_browse($table));
+    echo printSection('form', ci_view_form($table));
+    #echo printSection('model', $s->ci_model());
+    #echo printSection('browse', $s->ci_view_browse());
+    #echo printSection('view', $s->ci_view());
+    #echo printSection('form', $s->ci_view_form());
+    #echo printSection('actionsnav', $s->ci_view_actions());
     if($new_layout_css=='yes') {
-        echo printSection('header', $s->ci_header($_REQUEST['title']));
-        echo printSection('footer', $s->ci_footer());
-        echo printSection('css', $s->ci_css());
+        echo printSection('footer', ci_footer($table));
+        echo printSection('header', ci_header($table));
+        echo printSection('css', ci_css($table));
     }
 }
 ?>

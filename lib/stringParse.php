@@ -8,3 +8,11 @@ function find_text($text, $delimit_start = '`', $delimit_end = '`') {
 
     return substr ( $text, $start + 1, $end);
 }
+
+function cleanText($name) {
+    return ucwords(str_replace("_", " ", trim($name)));
+}
+
+function html_chars($var) {
+    return ($this->download) ? $var : htmlspecialchars($var);
+}
